@@ -31,6 +31,7 @@
 
       import controllerOpts from './controller.js';
       import { initGame, updateFromEntitiesData } from './game.js';
+      import{getAccount} from './account.js';
 
       import manifest from '../contracts/manifest_dev.json' assert { type: 'json' };
 
@@ -45,7 +46,7 @@
         const torii = await init({
           client: {
             worldAddress: manifest.world.address,
-            toriiUrl: 'http://localhost:8080',
+            toriiUrl: 'https://fantastic-space-fortnight-q596r56wpggc4x77-8080.app.github.dev',
           },
           domain: DOMAIN_SEPERATOR,
         });
@@ -59,10 +60,11 @@
           ),
           callback: ({ data, error }) => {
             if (data) {
+              console.log("Data from graphql:",data)
               updateFromEntitiesData(data);
             }
             if (error) {
-              console.error(error);
+              console.error("weird"+error);
             }
           },
         });
@@ -75,12 +77,12 @@
         });
       }
 
-      const controller = new Controller(controllerOpts);
+      //const controller = new Controller(controllerOpts);
 
       document.getElementById('controller-button').onclick = async () => {
         try {
-          let account = await controller.connect();
-
+         // let account = await controller.connect();
+          let account = await getAccount()
           document.getElementById('controller-button').textContent = 'Connected';
           document.getElementById('controller-button').style.backgroundColor = '#4CAF50';
           document.getElementById('spawn-button').disabled = false;

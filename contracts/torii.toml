@@ -2,3 +2,13 @@ world_address = "0x04fd367663e253d042fef50014873adba41eb40bfd52a3e686c1c37fe6e3d
 
 [server]
 http_cors_origins = ["*"]
+
+[grpc]
+# Enable gRPC-web
+port = 8080
+addr = "0.0.0.0"
+
+[relay]
+# If using relay server
+port = 9090
+addr = "0.0.0.0"
