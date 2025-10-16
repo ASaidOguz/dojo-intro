@@ -28,21 +28,20 @@ RUN bash -c ". $ASDF_DIR/asdf.sh \
     && asdf plugin add katana https://github.com/dojoengine/asdf-katana.git \
     && asdf plugin add torii https://github.com/dojoengine/asdf-torii.git \
     && asdf plugin add sozo https://github.com/dojoengine/asdf-sozo.git \
-    && asdf install sozo latest \
-    && asdf install katana latest \
-    && asdf install torii latest \
-    && asdf global sozo latest \
-    && asdf global katana latest \
-    && asdf global torii latest"
+    && asdf install sozo 1.7.0 \
+    && asdf install katana 1.7.0-alpha.4 \
+    && asdf install scarb 2.12.2 \
+    && asdf install torii 1.7.0 \
+    && asdf global sozo sozo 1.7.0 \
+    && asdf global katana 1.7.0-alpha.4 \
+    && asdf global torii 1.7.0 \
+    && asdf global scarb 2.12.2"
 
 # 6. Install Node.js and StarkNet Devnet via asdf
 RUN bash -c ". $ASDF_DIR/asdf.sh \
     && asdf plugin add nodejs \
-    && asdf plugin add starknet-devnet \
     && asdf install nodejs latest \
-    && asdf install starknet-devnet 0.4.1 \
-    && asdf global nodejs latest \
-    && asdf global starknet-devnet 0.4.1"
+    && asdf global nodejs latest"
 
 # 7. Install npm latest and pnpm latest
 RUN bash -c ". $ASDF_DIR/asdf.sh \
