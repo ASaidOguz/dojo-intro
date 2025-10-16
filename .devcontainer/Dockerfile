@@ -32,7 +32,7 @@ RUN bash -c ". $ASDF_DIR/asdf.sh \
     && asdf install katana 1.7.0-alpha.4 \
     && asdf install scarb 2.12.2 \
     && asdf install torii 1.7.0 \
-    && asdf global sozo sozo 1.7.0 \
+    && asdf global sozo  1.7.0 \
     && asdf global katana 1.7.0-alpha.4 \
     && asdf global torii 1.7.0 \
     && asdf global scarb 2.12.2"
