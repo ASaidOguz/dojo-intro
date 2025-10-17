@@ -2,7 +2,7 @@ import { RpcProvider, Account } from "starknet";
 
 export async function getAccount() {
   // Katana RPC endpoint — must include protocol (http/https)
-  const katanaRpcURL = "https://fantastic-space-fortnight-q596r56wpggc4x77-5050.app.github.dev";
+  const katanaRpcURL = "https://super-space-guacamole-9gqwvgwpj5gfp4pj-5050.app.github.dev";
 
   // 1. Create provider
   const provider = new RpcProvider({ nodeUrl: katanaRpcURL });
