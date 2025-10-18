@@ -1,48 +1,344 @@
 <!doctype html>
-
 <html>
   <head>
     <meta content="text/html;charset=utf-8" http-equiv="Content-Type" />
-    <style></style>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+      
+      body {
+        font-family: 'Arial', sans-serif;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        color: #fff;
+      }
+      
+      h1 {
+        font-size: 2em;
+        margin-bottom: 15px;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      }
+      
+      #game-container {
+        background: rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 20px;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        width: fit-content;
+        max-width: 95vw;
+      }
+      
+      #game-content {
+        display: flex;
+        gap: 25px;
+        align-items: flex-start;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      
+      #canvas-container {
+        position: relative;
+        border: 3px solid rgba(255,255,255,0.3);
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+        background: #2a1a4a;
+        flex-shrink: 0;
+        width: 420px;
+        height: 420px;
+      }
+      
+      #game-canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+      }
+      
+      #controls {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        flex: 1;
+        min-width: 300px;
+      }
+      
+      #info-panel {
+        display: flex;
+        justify-content: space-around;
+        gap: 20px;
+        flex-wrap: wrap;
+      }
+      
+      .info-card {
+        background: rgba(255,255,255,0.15);
+        padding: 15px 25px;
+        border-radius: 10px;
+        text-align: center;
+        flex: 1;
+        min-width: 150px;
+        backdrop-filter: blur(5px);
+      }
+      
+      .info-label {
+        font-size: 0.9em;
+        opacity: 0.8;
+        margin-bottom: 5px;
+      }
+      
+      .info-value {
+        font-size: 1.5em;
+        font-weight: bold;
+      }
+      
+      #action-buttons {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      
+      button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        padding: 12px 24px;
+        font-size: 16px;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      }
+      
+      button:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+      }
+      
+      button:active:not(:disabled) {
+        transform: translateY(0);
+      }
+      
+      button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      
+      #controller-button {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        font-size: 18px;
+        padding: 15px 40px;
+      }
+      
+      #controller-button.connected {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      }
+      
+      #direction-pad {
+        display: grid;
+        grid-template-columns: repeat(3, 70px);
+        grid-template-rows: repeat(3, 70px);
+        gap: 5px;
+        justify-content: center;
+        margin-top: 15px;
+      }
+      
+      #up-button { grid-column: 2; grid-row: 1; }
+      #left-button { grid-column: 1; grid-row: 2; }
+      #right-button { grid-column: 3; grid-row: 2; }
+      #down-button { grid-column: 2; grid-row: 3; }
+      
+      .direction-btn {
+        width: 70px;
+        height: 70px;
+        font-size: 24px;
+        padding: 0;
+      }
+    </style>
   </head>
-
   <body>
-    <h1>Spawn and move</h1>
-
-    <button id="controller-button">Connect</button>
-
-    <div>
-      <div id="position-display" class="display">Position: (0, 0)</div>
-      <div id="moves-display" class="display">Moves remaining: 0</div>
-
-      <button id="spawn-button" disabled>Spawn</button>
-      <button id="move-random-button" disabled>Move random</button>
-      <div>
-        <button id="up-button" disabled>Up</button>
-        <button id="down-button" disabled>Down</button>
-        <button id="left-button" disabled>Left</button>
-        <button id="right-button" disabled>Right</button>
+    <h1>🥋 Blockchain Dojo Game</h1>
+    
+    <div id="game-container">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <button id="controller-button">Connect Wallet</button>
+      </div>
+      
+      <div id="game-content">
+        <div id="canvas-container">
+          <canvas id="game-canvas" width="420" height="420"></canvas>
+        </div>
+        
+        <div id="controls">
+          <div id="info-panel">
+            <div class="info-card">
+              <div class="info-label">Position</div>
+              <div class="info-value" id="position-display">(0, 0)</div>
+            </div>
+            <div class="info-card">
+              <div class="info-label">Moves Remaining</div>
+              <div class="info-value" id="moves-display">0</div>
+            </div>
+          </div>
+          
+          <div id="action-buttons">
+            <button id="spawn-button" disabled>🎮 Spawn Player</button>
+            <button id="move-random-button" disabled>🎲 Move Random</button>
+          </div>
+          
+          <div id="direction-pad">
+            <button id="up-button" class="direction-btn" disabled>↑</button>
+            <button id="left-button" class="direction-btn" disabled>←</button>
+            <button id="right-button" class="direction-btn" disabled>→</button>
+            <button id="down-button" class="direction-btn" disabled>↓</button>
+          </div>
+        </div>
       </div>
     </div>
 
     <script type="module">
+      // Import your actual modules
       import Controller from '@cartridge/controller';
       import { init, ToriiQueryBuilder, KeysClause } from '@dojoengine/sdk';
-
       import controllerOpts from './controller.js';
-      import { initGame, updateFromEntitiesData } from './game.js';
-      import{getAccount} from './account.js';
-      import {getCodespaceServiceUrl} from './codespace-urlbuilder.js';
+      import { getAccount } from './account.js';
+      import { getCodespaceServiceUrl } from './codespace-urlbuilder.js';
       import manifest from '../contracts/manifest_dev.json' assert { type: 'json' };
-
+      
       const DOMAIN_SEPERATOR = {
         name: 'dojo-intro',
         version: '1.0',
         chainId: 'KATANA',
         revision: '1',
       };
-
-      async function run(account) {
+      
+      const NAMESPACE = 'di';
+      const POSITION_MODEL = 'Position';
+      const MOVES_MODEL = 'Moves';
+      const ACTIONS_CONTRACT = 'di-actions';
+      const VRF_PROVIDER_ADDRESS = '0x6ac5d209626d59297d55107df917a503e71deff7440b1d95d809dd7aa519db9';
+      
+      // Game rendering setup
+      const canvas = document.getElementById('game-canvas');
+      const ctx = canvas.getContext('2d');
+      
+      const GRID_SIZE = 10;
+      const CELL_SIZE = 420 / GRID_SIZE; // Canvas is now 420x420
+      
+      let playerPos = { x: 0, y: 0 };
+      let movesRemaining = 0;
+      let gameAccount = null;
+      let gameManifest = null;
+      
+      // Draw the game grid
+      function drawGrid() {
+        ctx.fillStyle = '#1a0a2e';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Grid lines
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+        ctx.lineWidth = 1;
+        
+        for (let i = 0; i <= GRID_SIZE; i++) {
+          ctx.beginPath();
+          ctx.moveTo(i * CELL_SIZE, 0);
+          ctx.lineTo(i * CELL_SIZE, canvas.height);
+          ctx.stroke();
+          
+          ctx.beginPath();
+          ctx.moveTo(0, i * CELL_SIZE);
+          ctx.lineTo(canvas.width, i * CELL_SIZE);
+          ctx.stroke();
+        }
+      }
+      
+      // Draw the player
+      function drawPlayer() {
+        // Invert Y coordinate for visual display (blockchain Y increases down, but we want visual up)
+        const x = playerPos.x * CELL_SIZE + CELL_SIZE / 2;
+        const y = (GRID_SIZE - 1 - playerPos.y) * CELL_SIZE + CELL_SIZE / 2;
+        const radius = CELL_SIZE / 3;
+        
+        // Glow effect
+        const gradient = ctx.createRadialGradient(x, y, 0, x, y, radius * 2);
+        gradient.addColorStop(0, 'rgba(255, 100, 255, 0.5)');
+        gradient.addColorStop(1, 'rgba(255, 100, 255, 0)');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(x - radius * 2, y - radius * 2, radius * 4, radius * 4);
+        
+        // Player circle
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, Math.PI * 2);
+        ctx.fillStyle = '#f093fb';
+        ctx.fill();
+        ctx.strokeStyle = '#fff';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        
+        // Player emoji/symbol
+        ctx.fillStyle = '#fff';
+        ctx.font = `${CELL_SIZE / 2}px Arial`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('🥋', x, y);
+      }
+      
+      // Main render function
+      function render() {
+        drawGrid();
+        drawPlayer();
+      }
+      
+      // Update display
+      function updateDisplay() {
+        document.getElementById('position-display').textContent = `(${playerPos.x}, ${playerPos.y})`;
+        document.getElementById('moves-display').textContent = movesRemaining;
+        render();
+      }
+      
+      // Update from blockchain data (wired to Torii)
+      function updateFromEntitiesData(data) {
+        console.log("Updating from Torii data:", data);
+        
+        if (data && data.length > 0) {
+          data.forEach(entity => {
+            if (entity.models && entity.models[NAMESPACE]) {
+              // Update position if Position component exists
+              if (entity.models[NAMESPACE][POSITION_MODEL]) {
+                const posModel = entity.models[NAMESPACE][POSITION_MODEL];
+                playerPos.x = parseInt(posModel.x) || 0;
+                playerPos.y = parseInt(posModel.y) || 0;
+              }
+              
+              // Update moves if Moves component exists
+              if (entity.models[NAMESPACE][MOVES_MODEL]) {
+                const movesModel = entity.models[NAMESPACE][MOVES_MODEL];
+                movesRemaining = parseInt(movesModel.remaining) || 0;
+              }
+            }
+          });
+          
+          updateDisplay();
+        }
+      }
+      
+      // Initialize game with Torii subscription
+      async function initGame(account, manifest) {
+        gameAccount = account;
+        gameManifest = manifest;
+        
+        // Initialize Torii client
         const torii = await init({
           client: {
             worldAddress: manifest.world.address,
@@ -50,52 +346,173 @@
           },
           domain: DOMAIN_SEPERATOR,
         });
-
-        initGame(account, manifest);
-
-        // Subscribe to model updates
+        
+        // Subscribe to model updates from blockchain
         const [_, subscription] = await torii.subscribeEntityQuery({
           query: new ToriiQueryBuilder().withClause(
             KeysClause(['di-Position', 'di-Moves'], [account.address], 'FixedLen').build(),
           ),
           callback: ({ data, error }) => {
             if (data) {
-              console.log("Data from graphql:",data)
+              console.log("Data from Torii indexer:", data);
               updateFromEntitiesData(data);
             }
             if (error) {
-              console.error("weird"+error);
+              console.error("Torii subscription error:", error);
             }
           },
         });
-
+        
         // Unsubscribe on window exit
         window.addEventListener('beforeunload', () => {
           if (subscription) {
             subscription.cancel();
           }
         });
+        
+        // Enable buttons
+        const buttons = ['spawn-button', 'move-random-button', 'up-button', 'down-button', 'left-button', 'right-button'];
+        buttons.forEach(id => {
+          document.getElementById(id).disabled = false;
+        });
+        
+        render();
+      }
+      
+      // Contract interaction functions (from game.js)
+      async function spawn(account, manifest) {
+        const tx = await account.execute({
+          contractAddress: manifest.contracts.find((contract) => contract.tag === ACTIONS_CONTRACT).address,
+          entrypoint: 'spawn',
+          calldata: [],
+        });
+        console.log('Spawn transaction sent:', tx);
       }
 
-      //const controller = new Controller(controllerOpts);
+      async function move(account, manifest, direction) {
+        let calldata;
+        
+        // Cairo serialization uses the variant index to determine the direction
+        switch (direction) {
+          case 'left':
+            calldata = ['0'];
+            break;
+          case 'right':
+            calldata = ['1'];
+            break;
+          case 'up':
+            calldata = ['2'];
+            break;
+          case 'down':
+            calldata = ['3'];
+            break;
+        }
 
+        const tx = await account.execute({
+          contractAddress: manifest.contracts.find((contract) => contract.tag === ACTIONS_CONTRACT).address,
+          entrypoint: 'move',
+          calldata: calldata,
+        });
+        console.log('Move transaction sent:', tx);
+      }
+
+      async function moveRandomContract(account, manifest) {
+        let action_addr = manifest.contracts.find(
+          (contract) => contract.tag === ACTIONS_CONTRACT,
+        ).address;
+
+        const tx = await account.execute([
+          {
+            contractAddress: VRF_PROVIDER_ADDRESS,
+            entrypoint: 'request_random',
+            calldata: [action_addr, '0', account.address],
+          },
+          {
+            contractAddress: action_addr,
+            entrypoint: 'move_random',
+            calldata: [],
+          },
+        ]);
+        console.log('Move random transaction sent:', tx);
+      }
+      
+      // Wire up to your actual game.js functions
+      async function spawnPlayer() {
+        try {
+          console.log('Spawning player...');
+          await spawn(gameAccount, gameManifest);
+          console.log('Spawn transaction submitted, waiting for Torii update...');
+          
+          // The updateFromEntitiesData will be called automatically via Torii subscription
+        } catch (error) {
+          console.error('Spawn failed:', error);
+          alert('Failed to spawn player: ' + error.message);
+        }
+      }
+      
+      async function movePlayer(direction) {
+        if (movesRemaining <= 0) {
+          alert('No moves remaining!');
+          return;
+        }
+        
+        try {
+          console.log('Moving:', direction);
+          await move(gameAccount, gameManifest, direction);
+          console.log('Move transaction submitted, waiting for Torii update...');
+          
+          // The updateFromEntitiesData will be called automatically via Torii subscription
+        } catch (error) {
+          console.error('Move failed:', error);
+          alert('Failed to move: ' + error.message);
+        }
+      }
+      
+      async function moveRandom() {
+        if (movesRemaining <= 0) {
+          alert('No moves remaining!');
+          return;
+        }
+        
+        try {
+          console.log('Moving random...');
+          await moveRandomContract(gameAccount, gameManifest);
+          console.log('Move random transaction submitted, waiting for Torii update...');
+        } catch (error) {
+          console.error('Move random failed:', error);
+          alert('Failed to move random: ' + error.message);
+        }
+      }
+      
+      // Connect button handler
       document.getElementById('controller-button').onclick = async () => {
         try {
-         // let account = await controller.connect();
-          let account = await getAccount()
-          document.getElementById('controller-button').textContent = 'Connected';
-          document.getElementById('controller-button').style.backgroundColor = '#4CAF50';
-          document.getElementById('spawn-button').disabled = false;
-
-          run(account).catch((error) => {
-            console.error(error);
-          });
+          // Use your actual account connection
+          let account = await getAccount();
+          
+          document.getElementById('controller-button').textContent = 'Connected ✓';
+          document.getElementById('controller-button').classList.add('connected');
+          
+          // Initialize game with Torii subscription
+          await initGame(account, manifest);
+          
+          // Set up button handlers
+          document.getElementById('spawn-button').onclick = spawnPlayer;
+          document.getElementById('move-random-button').onclick = moveRandom;
+          document.getElementById('up-button').onclick = () => movePlayer('up');
+          document.getElementById('down-button').onclick = () => movePlayer('down');
+          document.getElementById('left-button').onclick = () => movePlayer('left');
+          document.getElementById('right-button').onclick = () => movePlayer('right');
+          
         } catch (error) {
           console.error('Failed to connect:', error);
           document.getElementById('controller-button').textContent = 'Connection Failed';
-          document.getElementById('controller-button').style.backgroundColor = '#f44336';
+          alert('Connection failed: ' + error.message);
         }
       };
+      
+      // Initial render
+      render();
     </script>
   </body>
 </html>
