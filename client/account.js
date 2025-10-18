@@ -1,8 +1,9 @@
 import { RpcProvider, Account } from "starknet";
+import {getCodespaceServiceUrl} from "./codespace-urlbuilder";
 
 export async function getAccount() {
   // Katana RPC endpoint — must include protocol (http/https)
-  const katanaRpcURL = "https://super-space-guacamole-9gqwvgwpj5gfp4pj-5050.app.github.dev";
+  const katanaRpcURL = getCodespaceServiceUrl(5050);
 
   // 1. Create provider
   const provider = new RpcProvider({ nodeUrl: katanaRpcURL });

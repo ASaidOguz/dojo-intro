@@ -32,7 +32,7 @@
       import controllerOpts from './controller.js';
       import { initGame, updateFromEntitiesData } from './game.js';
       import{getAccount} from './account.js';
-
+      import {getCodespaceServiceUrl} from './codespace-urlbuilder.js';
       import manifest from '../contracts/manifest_dev.json' assert { type: 'json' };
 
       const DOMAIN_SEPERATOR = {
@@ -46,7 +46,7 @@
         const torii = await init({
           client: {
             worldAddress: manifest.world.address,
-            toriiUrl: 'https://super-space-guacamole-9gqwvgwpj5gfp4pj-8080.app.github.dev',
+            toriiUrl: getCodespaceServiceUrl(8080),
           },
           domain: DOMAIN_SEPERATOR,
         });
