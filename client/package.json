@@ -12,7 +12,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.15.1",
   "dependencies": {
-    "@cartridge/controller": "github:ASaidOguz/controller#codespace-fix",
+    "@cartridge/controller": "^0.10.5",
     "@dojoengine/core": "1.7.1",
     "@dojoengine/sdk": "^1.7.2",
     "@dojoengine/torii-client": "1.7.2",
