@@ -1,0 +1,13 @@
+[world]
+name = "Dojo intro"
+description = "A simple intro to Dojo."
+seed = "dojo_intro_sepolia"
+
+[namespace]
+default = "di"
+
+[env]
+
+
+[writers]
+"di" = ["di-actions"]

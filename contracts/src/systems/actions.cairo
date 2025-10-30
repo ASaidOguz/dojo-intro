@@ -30,7 +30,7 @@ pub mod actions {
 
     pub const INIT_COORD: u32 = 1;
     pub const INIT_REMAINING_MOVES: u8 = 100;
-    const VRF_PROVIDER_ADDRESS: felt252 = 0x6ac5d209626d59297d55107df917a503e71deff7440b1d95d809dd7aa519db9;
+    const VRF_PROVIDER_ADDRESS: felt252 = 0x051fea4450da9d6aee758bdeba88b2f665bcbf549d2c61421aa724e9ac0ced8f;
 
     #[abi(embed_v0)]
     impl ActionsImpl of IActions<ContractState> {
