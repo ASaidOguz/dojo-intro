@@ -1480,7 +1480,7 @@
   "contracts": [
     {
       "address": "0x7b47aa39068d5e7c68143e9252b188d86620aa46fd99344a4a0ec66cae433a8",
-      "class_hash": "0x2fefef43d82fda7b9be0df31127e785a4be7dba4d2637227e9a69a69587a1db",
+      "class_hash": "0x1f6ac5f8dd91bf39c1711006f06b783e77b6ddea1207fca9d6450b9ec73a022",
       "abi": [
         {
           "type": "impl",
@@ -1966,6 +1966,13 @@
       "selector": "0x594a11e54660698f5198d8a38c3f2a691680a4466addfeac08919c3014b5e75"
     }
   ],
-  "events": [],
+  "events": [
+    {
+      "members": [],
+      "class_hash": "0x2b3466f5d285eb1cbb9d2d0e9655297207a2f756a8cc54ce2c7a5b1f2d8b162",
+      "tag": "di-PlayerVrfValue",
+      "selector": "0x5e895332e7832e96a1560e974d0b0edee7eae0abda38d411f1b956615f0cc66"
+    }
+  ],
   "external_contracts": []
 }

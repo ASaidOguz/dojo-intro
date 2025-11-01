@@ -33,7 +33,7 @@
       import { initGame, updateFromEntitiesData } from './game.js';
 
       import manifest from '../contracts/manifest_sepolia.json' assert { type: 'json' };
-
+      import {getCodespaceServiceUrl} from './codespace-urlbuilder.js';
       const DOMAIN_SEPERATOR = {
         name: 'dojo-intro',
         version: '1.0',
@@ -42,10 +42,11 @@
       };
 
       async function run(account) {
+        const toriiUrl = getCodespaceServiceUrl(8080)
         const torii = await init({
           client: {
             worldAddress: manifest.world.address,
-            toriiUrl: 'http://localhost:8080',
+            toriiUrl: toriiUrl,
           },
           domain: DOMAIN_SEPERATOR,
         });

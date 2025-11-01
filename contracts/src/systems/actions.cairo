@@ -20,16 +20,35 @@ pub enum Source {
     Salt: felt252,
 }
 
+
+
+
 #[dojo::contract]
 pub mod actions {
-    use super::{IActions, IVrfProviderDispatcher, IVrfProviderDispatcherTrait, Source};
+    use starknet::ContractAddress;
+use dojo::event::EventStorage;
+use super::{IActions, IVrfProviderDispatcher, IVrfProviderDispatcherTrait, Source};
     use crate::models::{Direction, Moves, Position, PositionTrait};
 
     use core::num::traits::SaturatingSub;
     use dojo::model::ModelStorage;
 
+    #[derive(Copy, Drop,Serde, Introspect)]
+    struct VrfResponse {
+        value:u256
+    }
+
+    #[derive(Copy, Drop, Serde)]
+    #[dojo::event]
+    pub struct PlayerVrfValue {
+        #[key]
+        player: ContractAddress,
+        vrf_value: VrfResponse,
+    }
+    
     pub const INIT_COORD: u32 = 1;
     pub const INIT_REMAINING_MOVES: u8 = 100;
+    // vrf address of sepolia-testnet
     const VRF_PROVIDER_ADDRESS: felt252 = 0x051fea4450da9d6aee758bdeba88b2f665bcbf549d2c61421aa724e9ac0ced8f;
 
     #[abi(embed_v0)]
@@ -70,7 +89,7 @@ pub mod actions {
 
         fn move_random(ref self: ContractState) {
             let player = starknet::get_caller_address();
-
+            let mut world = self.world_default();
             let vrf_provider = IVrfProviderDispatcher { contract_address: VRF_PROVIDER_ADDRESS.try_into().unwrap() };
             let random_value: u256 = vrf_provider.consume_random(Source::Nonce(player)).into();
             let random_dir: felt252 = (random_value % 4).try_into().unwrap();
@@ -84,6 +103,12 @@ pub mod actions {
             };
 
             self.move(direction);
+
+            world.emit_event(@PlayerVrfValue {
+                player,
+                vrf_value: VrfResponse { value:random_value },
+            });
+
         }
 
     }
